@@ -24,5 +24,32 @@ namespace Client
         {
             InitializeComponent();
         }
+
+        private void Registration_Click(object sender, RoutedEventArgs e)
+        {
+            SignInGrid.Visibility = Visibility.Hidden;
+            RegistrationGrid.Visibility = Visibility.Visible;
+            LoginReg.Clear();
+            PasswdReg.Clear();
+            PasswdRegVer.Clear();
+        }
+
+        private void SignIn_Click(object sender, RoutedEventArgs e)
+        {
+            SignInGrid.Visibility = Visibility.Hidden;
+            RegistrationGrid.Visibility = Visibility.Hidden;
+            MainSpace.Visibility = Visibility.Visible;
+        }
+
+        private void DoneRegBt_Click(object sender, RoutedEventArgs e)
+        {
+            RegistrationGrid.Visibility = Visibility.Hidden;
+            SignInGrid.Visibility = Visibility.Visible;
+        }
+
+        private void LoginReg_TextChanged(object sender, TextChangedEventArgs e)
+        {
+
+        }
     }
 }
