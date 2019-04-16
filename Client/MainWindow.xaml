@@ -26,14 +26,16 @@
             <Label Content="Login" HorizontalAlignment="Left" Margin="30,137,0,0" VerticalAlignment="Top"/>
             <Label Content="Password" HorizontalAlignment="Left" Margin="30,187,0,0" VerticalAlignment="Top"/>
             <Label Content="Repeat password" HorizontalAlignment="Left" Margin="30,237,0,0" VerticalAlignment="Top"/>
+            <Label x:Name="RegLog" Content="" HorizontalAlignment="Left" Margin="124,284,0,0" VerticalAlignment="Top" Width="150"/>
         </Grid>
 
         <Grid x:Name="MainSpace" HorizontalAlignment="Left" Height="426" VerticalAlignment="Top" Width="794" Margin="0,0,-400,0" Visibility="Hidden">
             <ListBox x:Name="Users" HorizontalAlignment="Left" Height="320" Margin="10,96,0,0" VerticalAlignment="Top" Width="181"/>
-            <TextBox x:Name="Message" HorizontalAlignment="Left" Height="30" Margin="200,386,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="584"/>
-            <Label x:Name="History" Content="Start the messaging!!!" HorizontalAlignment="Left" Height="371" Margin="200,10,0,0" VerticalAlignment="Top" Width="584"/>
+            <TextBox x:Name="Message" HorizontalAlignment="Left" Height="30" Margin="200,381,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="452"/>
+            <Label x:Name="History" Content="Start the messaging!!!" HorizontalAlignment="Left" Height="347" Margin="200,10,0,0" VerticalAlignment="Top" Width="584"/>
             <TextBox x:Name="SearchUser" HorizontalAlignment="Left" Height="31" Margin="11,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="180"/>
             <Label Content="Users" HorizontalAlignment="Left" Margin="11,56,0,0" VerticalAlignment="Top" Width="180"/>
+            <Button x:Name="sendMessageBt" Content="SEND" HorizontalAlignment="Left" Margin="676,379,0,0" VerticalAlignment="Top" Width="108"/>
 
         </Grid>
 

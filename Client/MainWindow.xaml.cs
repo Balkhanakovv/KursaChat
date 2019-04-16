@@ -43,8 +43,15 @@ namespace Client
 
         private void DoneRegBt_Click(object sender, RoutedEventArgs e)
         {
-            RegistrationGrid.Visibility = Visibility.Hidden;
-            SignInGrid.Visibility = Visibility.Visible;
+            if (PasswdReg.Password.ToString() == PasswdRegVer.Password.ToString()) {
+
+                RegistrationGrid.Visibility = Visibility.Hidden;
+                SignInGrid.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                RegLog.Content = "Passwords don't match";
+            }
         }
 
         private void LoginReg_TextChanged(object sender, TextChangedEventArgs e)
