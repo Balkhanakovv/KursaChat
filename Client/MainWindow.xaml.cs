@@ -12,46 +12,93 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Net;
+using System.Net.Sockets;
+using System.Threading;
 
 namespace Client
 {
     /// <summary>
     /// Логика взаимодействия для MainWindow.xaml
     /// </summary>
+   
     public partial class MainWindow : Window
     {
+        const string address = "127.0.0.1";
+        TcpClient client = null;
+        NetworkStream stream;
+        const int port = 666;
+
         public MainWindow()
         {
             InitializeComponent();
         }
 
-        private void Registration_Click(object sender, RoutedEventArgs e)
-        {
-            SignInGrid.Visibility = Visibility.Hidden;
-            RegistrationGrid.Visibility = Visibility.Visible;
-            LoginReg.Clear();
-            PasswdReg.Clear();
-            PasswdRegVer.Clear();
-        }
 
         private void SignIn_Click(object sender, RoutedEventArgs e)
         {
+            try
+            {
+                client = new TcpClient(address, port);
+                stream = client.GetStream();
+
+                Thread myThread1 = new Thread(new ThreadStart(Count));
+                myThread1.Start();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
             SignInGrid.Visibility = Visibility.Hidden;
-            RegistrationGrid.Visibility = Visibility.Hidden;
             MainSpace.Visibility = Visibility.Visible;
         }
 
-        private void DoneRegBt_Click(object sender, RoutedEventArgs e)
+        public void Count()
         {
-            if (PasswdReg.Password.ToString() == PasswdRegVer.Password.ToString()) {
-
-                RegistrationGrid.Visibility = Visibility.Hidden;
-                SignInGrid.Visibility = Visibility.Visible;
-            }
-            else
+            try
             {
-                RegLog.Content = "Passwords don't match";
+                while (true)
+                {
+                    byte[] data = new byte[64];
+                    StringBuilder builder = new StringBuilder();
+                    int bytes = 0;
+                    do
+                    {
+                        bytes = stream.Read(data, 0, data.Length);
+                        builder.Append(Encoding.Unicode.GetString(data, 0, bytes));
+                    }
+                    while (stream.DataAvailable);
+
+                    string message = builder.ToString();
+                    string serverCodeResponse = message.Substring(0, 3);
+                    string clientCodeRequest;
+
+                    switch (serverCodeResponse)
+                    {
+                        case "swp": break;
+                        case "srp": break;
+                        case "sub": break;
+                        case "scm": break;
+                    }
+
+                    switch (clientCodeRequest)
+                    {
+                        case "cm": break;
+                        case "cp": break;
+                        case "cl": break;
+                    }
+                }
             }
+            catch
+            {
+
+            }
+            finally
+            {
+
+            }
+
+
         }
 
         private void LoginReg_TextChanged(object sender, TextChangedEventArgs e)
