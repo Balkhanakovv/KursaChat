@@ -49,6 +49,23 @@ namespace Client
             {
                 MessageBox.Show(ex.Message);
             }
+
+            try
+            {
+                string username = "cl" + LoginTb.Text;
+                string password = "cp" + PasswdTb.Password.ToString();
+
+                byte[] un = Encoding.Unicode.GetBytes(username);
+                byte[] pw = Encoding.Unicode.GetBytes(password);
+
+                stream.Write(un, 0, un.Length);
+                stream.Write(pw, 0, pw.Length);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+
             SignInGrid.Visibility = Visibility.Hidden;
             MainSpace.Visibility = Visibility.Visible;
         }
@@ -71,7 +88,6 @@ namespace Client
 
                     string message = builder.ToString();
                     string serverCodeResponse = message.Substring(0, 3);
-                    string clientCodeRequest;
 
                     switch (serverCodeResponse)
                     {
@@ -79,13 +95,6 @@ namespace Client
                         case "srp": break;
                         case "sub": break;
                         case "scm": break;
-                    }
-
-                    switch (clientCodeRequest)
-                    {
-                        case "cm": break;
-                        case "cp": break;
-                        case "cl": break;
                     }
                 }
             }
@@ -104,6 +113,21 @@ namespace Client
         private void LoginReg_TextChanged(object sender, TextChangedEventArgs e)
         {
 
+        }
+
+        private void SendMess_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                string message = "cm" + Message.Text;
+
+                byte[] data = Encoding.Unicode.GetBytes(message);
+                stream.Write(data, 0, data.Length);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
     }
 }
