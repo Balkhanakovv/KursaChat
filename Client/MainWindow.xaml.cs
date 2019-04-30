@@ -65,9 +65,7 @@ namespace Client
             {
                 MessageBox.Show(ex.Message);
             }
-
-            SignInGrid.Visibility = Visibility.Hidden;
-            MainSpace.Visibility = Visibility.Visible;
+            
         }
 
         public void Count()
@@ -88,13 +86,22 @@ namespace Client
 
                     string message = builder.ToString();
                     string serverCodeResponse = message.Substring(0, 3);
+                    message = message.Substring(3, message.Length);
 
                     switch (serverCodeResponse)
                     {
-                        case "swp": break;
-                        case "srp": break;
-                        case "sub": break;
-                        case "scm": break;
+                        case "swp": responseLog.Content = "Wrong password"; break;
+                        case "srp":
+                            SignInGrid.Visibility = Visibility.Hidden;
+                            MainSpace.Visibility = Visibility.Visible;
+                            break;
+                        case "sub": responseLog.Content = "You have been baned"; break;
+                        case "scm":
+                            int pos = message.IndexOf('§');
+                            string us = message.Substring(0, pos-1);
+                            message = message.Substring(pos+1, message.Length); 
+                            history.Items.Add(DateTime.Now + " " + us + ":\t" + message);
+                            break;
                     }
                 }
             }
@@ -109,12 +116,7 @@ namespace Client
 
 
         }
-
-        private void LoginReg_TextChanged(object sender, TextChangedEventArgs e)
-        {
-
-        }
-
+             
         private void SendMess_Click(object sender, RoutedEventArgs e)
         {
             try

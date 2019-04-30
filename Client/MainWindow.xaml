@@ -14,15 +14,16 @@
             <PasswordBox x:Name="PasswdTb" HorizontalAlignment="Left" Height="23" Margin="136,208,0,0" VerticalAlignment="Top" Width="120"/>
             <Label Content="Login" HorizontalAlignment="Left" Margin="136,106,0,0" VerticalAlignment="Top" Width="120"/>
             <Label Content="Password" HorizontalAlignment="Left" Margin="136,177,0,0" VerticalAlignment="Top" Width="120"/>
+            <Label x:Name="responseLog" Content="" HorizontalAlignment="Left" Margin="136,271,0,0" VerticalAlignment="Top" Width="120"/>
         </Grid>
 
         <Grid x:Name="MainSpace" HorizontalAlignment="Left" Height="426" VerticalAlignment="Top" Width="794" Margin="0,0,-400,0" Visibility="Hidden">
             <ListBox x:Name="Users" HorizontalAlignment="Left" Height="320" Margin="10,96,0,0" VerticalAlignment="Top" Width="181"/>
             <TextBox x:Name="Message" HorizontalAlignment="Left" Height="30" Margin="200,386,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="500"/>
-            <Label x:Name="History" Content="Start the messaging!!!" HorizontalAlignment="Left" Height="371" Margin="200,10,0,0" VerticalAlignment="Top" Width="584"/>
             <TextBox x:Name="SearchUser" HorizontalAlignment="Left" Height="31" Margin="11,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="180"/>
             <Label Content="Users" HorizontalAlignment="Left" Margin="11,56,0,0" VerticalAlignment="Top" Width="180"/>
             <Button Content="Send" HorizontalAlignment="Left" VerticalAlignment="Top" Width="79" Margin="705,386,0,0" Height="30" Click="SendMess_Click"/>
+            <ListBox x:Name="history" HorizontalAlignment="Left" Height="371" Margin="200,10,0,0" VerticalAlignment="Top" Width="584"/>
 
         </Grid>
 

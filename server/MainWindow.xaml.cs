@@ -6,6 +6,7 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Text;
 using System.Data.SQLite;
+using System.Collections.Generic;
 
 namespace server
 {
@@ -17,6 +18,16 @@ namespace server
         const int port = 666;
         static TcpListener listener;
         string currentTime = DateTime.Now.ToLongTimeString();
+
+        struct SClient
+        {
+            public TcpClient client;
+            public NetworkStream stream;
+            public string us;
+        }
+
+        List<SClient> clients = new List<SClient>();
+
 
         public MainWindow()
         {
@@ -30,6 +41,10 @@ namespace server
                 listener = new TcpListener(IPAddress.Parse("127.0.0.1"), port);
                 listener.Start();
                 ServerLog.Items.Add(currentTime + ":\tServer has been started");
+
+                Thread clientThread = new Thread(() => listen());
+               // Dispatcher.BeginInvoke(new Action(() => ServerLog.Items.Add(currentTime + ":\tNew connection")));
+                clientThread.Start();
 
             }
             catch (Exception ex)
@@ -80,11 +95,18 @@ namespace server
         public void Process(TcpClient tcpClient)
         {
             int ex = -1;
-            string us = "";
-            TcpClient client = tcpClient;
-            NetworkStream stream = null;
+            
+            //TcpClient client = tcpClient;
+            //NetworkStream stream = null;
 
-            stream = client.GetStream();
+            SClient client = new SClient();
+
+            client.client = tcpClient;
+
+            client.stream = client.client.GetStream();
+
+            clients.Add(client);
+
             byte[] data = new byte[64];
             try
             {
@@ -94,16 +116,16 @@ namespace server
                     int bytes = 0;
                     do
                     {
-                        bytes = stream.Read(data, 0, data.Length);
+                        bytes = client.stream.Read(data, 0, data.Length);
                         builder.Append(Encoding.Unicode.GetString(data, 0, bytes));
                     }
-                    while (stream.DataAvailable);
+                    while (client.stream.DataAvailable);
 
                     string message = builder.ToString();
                     string clientCode = message.Substring(0, 2);
-                    message = message.Substring(3, message.Length);
+                    message = message.Substring(2, message.Length);
 
-                    string db_name = "C:\\Users\\Chudo\\source\\repos\\KursaChat\\KursaChat.db";
+                    string db_name = "C:\\Users\\Admin\\Documents\\РИ-89\\KursaChat\\KursaChat.db";
                     SQLiteConnection m_dbConnection;
                     m_dbConnection = new SQLiteConnection("Data Source=" + db_name + ";Version=3;");
                     m_dbConnection.Open();
@@ -118,7 +140,7 @@ namespace server
                              SQLiteCommand command = new SQLiteCommand(sqlCL, m_dbConnection);
                              object reader = command.ExecuteScalar();
                              int exist = Convert.ToInt32(reader);
-                             us = message;
+                             client.us = message;
                              if (exist == 0)
                              { 
                                 ex = 0;
@@ -135,36 +157,45 @@ namespace server
 
                                 if (ex == 0)
                                 {
-                                    string add = "INSERT INTO Users(Username, Password) VALUES('" + us + "', '" + message + "')";
+                                    string add = "INSERT INTO Users(Username, Password) VALUES('" + client.us + "', '" + message + "')";
                                     response = "srp";
+                                    data = Encoding.Unicode.GetBytes(response);
+                                    client.stream.Write(data, 0, data.Length);
                                 }
                                 else
                                 {
-                                    string sqlCP = "SELECT COUNT(*) FROM Users WHERE Username = '" + us + "' AND Password = '" + message + "'";
+                                    string sqlCP = "SELECT COUNT(*) FROM Users WHERE Username = '" + client.us + "' AND Password = '" + message + "'";
                                     SQLiteCommand command = new SQLiteCommand(sqlCP, m_dbConnection);
                                     object reader = command.ExecuteScalar();
                                     int exist = Convert.ToInt32(reader);
                                     if(exist == 0)
                                     {
                                         response = "swp";
+                                        data = Encoding.Unicode.GetBytes(response);
+                                        client.stream.Write(data, 0, data.Length);
                                     }
                                     else
                                     {
                                         response = "srp";
+                                        data = Encoding.Unicode.GetBytes(response);
+                                        client.stream.Write(data, 0, data.Length);
                                     }
                                 }
                             }
                             break;
 
                         case "cm":
-                            string sqlCM = "INSERT INTO GeneralMes(Username, Message) VALUES('" + us + "', '" + message + "')";
+                            string sqlCM = "INSERT INTO GeneralMes(Username, Message) VALUES('" + client.us + "', '" + message + "')";
+                            data = Encoding.Unicode.GetBytes("scm" + client.us + "§" + message);
+                            foreach (SClient cl in clients)
+                            {
+                                if (cl.client != client.client)
+                                    cl.stream.Write(data, 0, data.Length);
+                            }
                             break;
                     }
 
                     m_dbConnection.Close();
-
-                    data = Encoding.Unicode.GetBytes(message);
-                    stream.Write(data, 0, data.Length);
                 }
             }
             catch
@@ -173,13 +204,13 @@ namespace server
             }
             finally
             {
-                if (client != null)
+                if (client.client != null)
                 {
-                    client.Close();
+                    client.client.Close();
                 }
-                if (stream != null)
+                if (client.stream != null)
                 {
-                    stream.Close();
+                    client.stream.Close();
                 }
             }
         }
