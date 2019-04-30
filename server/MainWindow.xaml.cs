@@ -122,8 +122,11 @@ namespace server
                     while (client.stream.DataAvailable);
 
                     string message = builder.ToString();
-                    string clientCode = message.Substring(0, 2);
-                    message = message.Substring(2, message.Length);
+                    ServerLog.Items.Add(message);
+                    string clientCode = message.Substring(0, 3);
+                    message = message.Substring(3);
+
+                    ServerLog.Items.Add(clientCode + "\t" + message);
 
                     string db_name = "C:\\Users\\Admin\\Documents\\РИ-89\\KursaChat\\KursaChat.db";
                     SQLiteConnection m_dbConnection;
@@ -131,6 +134,7 @@ namespace server
                     m_dbConnection.Open();
 
                     string response = "";
+
 
                     switch (clientCode)
                     {
