@@ -52,14 +52,11 @@ namespace Client
 
             try
             {
-                string username = "cl" + LoginTb.Text;
-                string password = "cp" + PasswdTb.Password.ToString();
+                string uspa = "up" + LoginTb.Text + "¬" + PasswdTb.Password.ToString();
 
-                byte[] un = Encoding.Unicode.GetBytes(username);
-                byte[] pw = Encoding.Unicode.GetBytes(password);
+                byte[] up = Encoding.Unicode.GetBytes(uspa);
 
-                stream.Write(un, 0, un.Length);
-                stream.Write(pw, 0, pw.Length);
+                stream.Write(up, 0, up.Length);
             }
             catch (Exception ex)
             {
@@ -86,21 +83,21 @@ namespace Client
 
                     string message = builder.ToString();
                     string serverCodeResponse = message.Substring(0, 3);
-                    message = message.Substring(3, message.Length);
+                    //message = message.Substring(3, message.Length);
 
                     switch (serverCodeResponse)
                     {
-                        case "swp": responseLog.Content = "Wrong password"; break;
+                        case "swp": Dispatcher.BeginInvoke(new Action(() => responseLog.Content = "Wrong password")); break;
                         case "srp":
-                            SignInGrid.Visibility = Visibility.Hidden;
-                            MainSpace.Visibility = Visibility.Visible;
+                            Dispatcher.BeginInvoke(new Action(() => SignInGrid.Visibility = Visibility.Hidden));
+                            Dispatcher.BeginInvoke(new Action(() => MainSpace.Visibility = Visibility.Visible));
                             break;
-                        case "sub": responseLog.Content = "You have been baned"; break;
+                        case "sub": Dispatcher.BeginInvoke(new Action(() => responseLog.Content = "You have been baned")); break;
                         case "scm":
                             int pos = message.IndexOf('§');
                             string us = message.Substring(0, pos-1);
-                            message = message.Substring(pos+1, message.Length); 
-                            history.Items.Add(DateTime.Now + " " + us + ":\t" + message);
+                            message = message.Substring(pos+1, message.Length);
+                            Dispatcher.BeginInvoke(new Action(() => history.Items.Add(DateTime.Now + " " + us + ":\t" + message)));
                             break;
                     }
                 }

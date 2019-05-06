@@ -24,6 +24,7 @@ namespace server
             public TcpClient client;
             public NetworkStream stream;
             public string us;
+            public string password;
         }
 
         List<SClient> clients = new List<SClient>();
@@ -94,7 +95,6 @@ namespace server
 
         public void Process(TcpClient tcpClient)
         {
-            int ex = -1;
             
             //TcpClient client = tcpClient;
             //NetworkStream stream = null;
@@ -122,13 +122,13 @@ namespace server
                     while (client.stream.DataAvailable);
 
                     string message = builder.ToString();
-                    ServerLog.Items.Add(message);
-                    string clientCode = message.Substring(0, 3);
-                    message = message.Substring(3);
+                    string clientCode = message.Substring(0, 2);
+                    message = message.Substring(2);
 
-                    ServerLog.Items.Add(clientCode + "\t" + message);
+                    Dispatcher.BeginInvoke(new Action(() => ServerLog.Items.Add(clientCode + "\t" + message)));
 
-                    string db_name = "C:\\Users\\Admin\\Documents\\РИ-89\\KursaChat\\KursaChat.db";
+                    //string db_name = "C:\\Users\\Admin\\Documents\\РИ-89\\KursaChat\\KursaChat.db";
+                    string db_name = "C:\\Users\\Chudo\\source\\repos\\KursaChat\\KursaChat.db";
                     SQLiteConnection m_dbConnection;
                     m_dbConnection = new SQLiteConnection("Data Source=" + db_name + ";Version=3;");
                     m_dbConnection.Open();
@@ -138,54 +138,43 @@ namespace server
 
                     switch (clientCode)
                     {
-                        case "cl":
-                        {                           
-                             string sqlCL = "SELECT COUNT(*) FROM Users WHERE Username = '" + message + "'";
+                        case "up":
+                             int indexOfChar = message.IndexOf("¬");
+                             client.us = message.Substring(0, indexOfChar);
+                             string sqlCL = "SELECT COUNT(*) FROM Users WHERE Username = '" + client.us + "'";
                              SQLiteCommand command = new SQLiteCommand(sqlCL, m_dbConnection);
                              object reader = command.ExecuteScalar();
-                             int exist = Convert.ToInt32(reader);
-                             client.us = message;
-                             if (exist == 0)
-                             { 
-                                ex = 0;
-                             }
-                             else
-                             {
-                                ex = 1;
-                             }
-                        }
-                        break;
-
-                        case "cp":
+                             int exist = int.Parse(reader.ToString());
+                             client.password = message.Substring(indexOfChar+1);
+                            if (exist == 0)
                             {
-
-                                if (ex == 0)
+                                string add = "INSERT INTO Users(Username, Password) VALUES('" + client.us + "', '" + client.password + "')";
+                                SQLiteCommand command1 = new SQLiteCommand(add, m_dbConnection);
+                                command1.ExecuteNonQuery();
+                                response = "srp";
+                                data = Encoding.Unicode.GetBytes(response);
+                                client.stream.Write(data, 0, data.Length);
+                            }
+                            else
+                            {
+                                string sqlCP = "SELECT COUNT(*) FROM Users WHERE Username = '" + client.us + "' AND Password = '" + client.password + "'";
+                                SQLiteCommand command2 = new SQLiteCommand(sqlCP, m_dbConnection);
+                                object reader1 = command.ExecuteScalar();
+                                int exist1 = Convert.ToInt32(reader);
+                                if (exist1 == 0)
                                 {
-                                    string add = "INSERT INTO Users(Username, Password) VALUES('" + client.us + "', '" + message + "')";
-                                    response = "srp";
+                                    response = "swp";
                                     data = Encoding.Unicode.GetBytes(response);
                                     client.stream.Write(data, 0, data.Length);
                                 }
                                 else
                                 {
-                                    string sqlCP = "SELECT COUNT(*) FROM Users WHERE Username = '" + client.us + "' AND Password = '" + message + "'";
-                                    SQLiteCommand command = new SQLiteCommand(sqlCP, m_dbConnection);
-                                    object reader = command.ExecuteScalar();
-                                    int exist = Convert.ToInt32(reader);
-                                    if(exist == 0)
-                                    {
-                                        response = "swp";
-                                        data = Encoding.Unicode.GetBytes(response);
-                                        client.stream.Write(data, 0, data.Length);
-                                    }
-                                    else
-                                    {
-                                        response = "srp";
-                                        data = Encoding.Unicode.GetBytes(response);
-                                        client.stream.Write(data, 0, data.Length);
-                                    }
+                                    response = "srp";
+                                    data = Encoding.Unicode.GetBytes(response);
+                                    client.stream.Write(data, 0, data.Length);
                                 }
                             }
+
                             break;
 
                         case "cm":
