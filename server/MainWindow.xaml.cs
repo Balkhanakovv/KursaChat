@@ -71,7 +71,32 @@ namespace server
 
         private void banUserBt_Click(object sender, RoutedEventArgs e)
         {
-
+            if (ConnectedUsers.SelectedIndex > -1)
+            {
+                
+                string banned = ConnectedUsers.SelectedItem.ToString();
+                foreach (SClient cl in clients)
+                {
+                    if (cl.us == banned)
+                    {
+                        //string sqlBan = "";
+                        clients.Remove(cl);
+                        ConnectedUsers.Items.RemoveAt(ConnectedUsers.SelectedIndex);
+                        ConnectedUsers.Items.Refresh();
+                        if (cl.client != null)
+                        {
+                            cl.client.Close();
+                        }
+                        if (cl.stream != null)
+                        {
+                            cl.stream.Close();
+                        }
+                        break;
+                    } 
+                }
+                
+                
+            }
         }
 
         public void listen()
@@ -105,7 +130,7 @@ namespace server
 
             client.stream = client.client.GetStream();
 
-            clients.Add(client);
+            
 
             byte[] data = new byte[64];
             try
@@ -127,8 +152,8 @@ namespace server
 
                     Dispatcher.BeginInvoke(new Action(() => ServerLog.Items.Add(clientCode + "\t" + message)));
 
-                    //string db_name = "C:\\Users\\Admin\\Documents\\РИ-89\\KursaChat\\KursaChat.db";
-                    string db_name = "C:\\Users\\Chudo\\source\\repos\\KursaChat\\KursaChat.db";
+                    string db_name = "C:\\Users\\Admin\\Documents\\РИ-89\\KursaChat\\KursaChat.db";
+                    //string db_name = "C:\\Users\\Chudo\\source\\repos\\KursaChat\\KursaChat.db";
                     SQLiteConnection m_dbConnection;
                     m_dbConnection = new SQLiteConnection("Data Source=" + db_name + ";Version=3;");
                     m_dbConnection.Open();
@@ -139,13 +164,15 @@ namespace server
                     switch (clientCode)
                     {
                         case "up":
-                             int indexOfChar = message.IndexOf("¬");
-                             client.us = message.Substring(0, indexOfChar);
-                             string sqlCL = "SELECT COUNT(*) FROM Users WHERE Username = '" + client.us + "'";
-                             SQLiteCommand command = new SQLiteCommand(sqlCL, m_dbConnection);
-                             object reader = command.ExecuteScalar();
-                             int exist = int.Parse(reader.ToString());
-                             client.password = message.Substring(indexOfChar+1);
+                            int indexOfChar = message.IndexOf("¬");
+                            client.us = message.Substring(0, indexOfChar);
+                            string sqlCL = "SELECT COUNT(*) FROM Users WHERE Username = '" + client.us + "'";
+                            SQLiteCommand command = new SQLiteCommand(sqlCL, m_dbConnection);
+                            object reader = command.ExecuteScalar();
+                            int exist = int.Parse(reader.ToString());
+                            client.password = message.Substring(indexOfChar+1);
+                            Dispatcher.BeginInvoke(new Action(() => ConnectedUsers.Items.Add(client.us)));
+
                             if (exist == 0)
                             {
                                 string add = "INSERT INTO Users(Username, Password) VALUES('" + client.us + "', '" + client.password + "')";
@@ -154,13 +181,15 @@ namespace server
                                 response = "srp";
                                 data = Encoding.Unicode.GetBytes(response);
                                 client.stream.Write(data, 0, data.Length);
+                                
+                                clients.Add(client);
                             }
                             else
                             {
                                 string sqlCP = "SELECT COUNT(*) FROM Users WHERE Username = '" + client.us + "' AND Password = '" + client.password + "'";
                                 SQLiteCommand command2 = new SQLiteCommand(sqlCP, m_dbConnection);
-                                object reader1 = command.ExecuteScalar();
-                                int exist1 = Convert.ToInt32(reader);
+                                object reader1 = command2.ExecuteScalar();
+                                int exist1 = int.Parse(reader1.ToString());
                                 if (exist1 == 0)
                                 {
                                     response = "swp";
@@ -172,6 +201,7 @@ namespace server
                                     response = "srp";
                                     data = Encoding.Unicode.GetBytes(response);
                                     client.stream.Write(data, 0, data.Length);
+                                    clients.Add(client);
                                 }
                             }
 
@@ -179,12 +209,15 @@ namespace server
 
                         case "cm":
                             string sqlCM = "INSERT INTO GeneralMes(Username, Message) VALUES('" + client.us + "', '" + message + "')";
+                            SQLiteCommand command3 = new SQLiteCommand(sqlCM, m_dbConnection);
+                            command3.ExecuteNonQuery();
                             data = Encoding.Unicode.GetBytes("scm" + client.us + "§" + message);
                             foreach (SClient cl in clients)
                             {
                                 if (cl.client != client.client)
                                     cl.stream.Write(data, 0, data.Length);
                             }
+                            client.stream.Write(data, 0, data.Length);
                             break;
                     }
 

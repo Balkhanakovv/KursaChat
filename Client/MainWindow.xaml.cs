@@ -83,7 +83,7 @@ namespace Client
 
                     string message = builder.ToString();
                     string serverCodeResponse = message.Substring(0, 3);
-                    //message = message.Substring(3, message.Length);
+                    message = message.Substring(3);
 
                     switch (serverCodeResponse)
                     {
@@ -95,9 +95,9 @@ namespace Client
                         case "sub": Dispatcher.BeginInvoke(new Action(() => responseLog.Content = "You have been baned")); break;
                         case "scm":
                             int pos = message.IndexOf('§');
-                            string us = message.Substring(0, pos-1);
-                            message = message.Substring(pos+1, message.Length);
-                            Dispatcher.BeginInvoke(new Action(() => history.Items.Add(DateTime.Now + " " + us + ":\t" + message)));
+                            string us = message.Substring(0, pos);
+                            message = message.Substring(pos+1);
+                            Dispatcher.BeginInvoke(new Action(() => history.Items.Add(DateTime.Now + "\t" + us + ": " + message)));
                             break;
                     }
                 }
