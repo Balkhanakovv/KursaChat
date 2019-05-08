@@ -5,10 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Client"
         mc:Ignorable="d"
-        Title="KursaChat" Height="455" Width="800" ResizeMode="CanMinimize">
+        Title="KursaChat" Height="455" Width="808.071" ResizeMode="CanMinimize">
 
     <Grid>
-        <Grid x:Name="SignInGrid" Margin="0,0,400,0" Visibility="Visible">
+        <Grid x:Name="SignInGrid" Margin="0,0,400,0" Visibility="Hidden">
             <Button x:Name="SignInBt" Content="Sign in" HorizontalAlignment="Left" Margin="150,330,0,0" VerticalAlignment="Top" Width="95" Click="SignIn_Click"/>
             <TextBox x:Name="LoginTb" HorizontalAlignment="Left" Height="23" Margin="136,137,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
             <PasswordBox x:Name="PasswdTb" HorizontalAlignment="Left" Height="23" Margin="136,208,0,0" VerticalAlignment="Top" Width="120"/>
@@ -17,13 +17,12 @@
             <Label x:Name="responseLog" Content="" HorizontalAlignment="Left" Margin="136,271,0,0" VerticalAlignment="Top" Width="120"/>
         </Grid>
 
-        <Grid x:Name="MainSpace" HorizontalAlignment="Left" Height="426" VerticalAlignment="Top" Width="794" Margin="0,0,-400,0" Visibility="Hidden">
-            <ListBox x:Name="Users" HorizontalAlignment="Left" Height="320" Margin="10,96,0,0" VerticalAlignment="Top" Width="181"/>
-            <TextBox x:Name="Message" HorizontalAlignment="Left" Height="30" Margin="200,386,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="500"/>
-            <TextBox x:Name="SearchUser" HorizontalAlignment="Left" Height="31" Margin="11,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="180"/>
-            <Label Content="Users" HorizontalAlignment="Left" Margin="11,56,0,0" VerticalAlignment="Top" Width="180"/>
-            <Button Content="Send" HorizontalAlignment="Left" VerticalAlignment="Top" Width="79" Margin="705,386,0,0" Height="30" Click="SendMess_Click"/>
-            <ListBox x:Name="history" HorizontalAlignment="Left" Height="371" Margin="200,10,0,0" VerticalAlignment="Top" Width="584"/>
+        <Grid x:Name="MainSpace" HorizontalAlignment="Left" Height="426" VerticalAlignment="Top" Width="794" Margin="0,0,-400,0" Visibility="Visible">
+            <ListBox x:Name="Users" HorizontalAlignment="Left" Height="356" Margin="10,50,0,0" VerticalAlignment="Top" Width="181" BorderThickness="1"/>
+            <TextBox x:Name="Message" HorizontalAlignment="Left" Height="30" Margin="200,376,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="500"/>
+            <Label Content="Users" HorizontalAlignment="Left" Margin="11,19,0,0" VerticalAlignment="Top" Width="180"/>
+            <Button Content="Send" HorizontalAlignment="Left" VerticalAlignment="Top" Width="79" Margin="705,376,0,0" Height="30" Click="SendMess_Click"/>
+            <ListBox x:Name="history" HorizontalAlignment="Left" Height="361" Margin="200,10,0,0" VerticalAlignment="Top" Width="584"/>
 
         </Grid>
 

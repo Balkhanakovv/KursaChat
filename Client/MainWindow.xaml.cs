@@ -128,5 +128,11 @@ namespace Client
                 MessageBox.Show(ex.Message);
             }
         }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            stream.Close();
+            client.Close();
+        }
     }
 }
