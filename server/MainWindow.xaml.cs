@@ -56,7 +56,8 @@ namespace server
 
         private void stopServerBt_Click(object sender, RoutedEventArgs e)
         {
-
+            listener.Stop();
+            ServerLog.Items.Add("Server has been stopped");
         }
 
         private void ConnectedUsers_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -73,13 +74,28 @@ namespace server
         {
             if (ConnectedUsers.SelectedIndex > -1)
             {
-                
+                //string db_name = "C:\\Users\\Admin\\Documents\\РИ-89\\KursaChat\\KursaChat.db";
+                string db_name = "C:\\Users\\Chudo\\source\\repos\\KursaChat\\KursaChat.db";
+                SQLiteConnection m_dbConnection;
+                m_dbConnection = new SQLiteConnection("Data Source=" + db_name + ";Version=3;");
+                m_dbConnection.Open();
+
                 string banned = ConnectedUsers.SelectedItem.ToString();
                 foreach (SClient cl in clients)
                 {
                     if (cl.us == banned)
                     {
-                        //string sqlBan = "";
+                        string sqlInsertBan = "INSERT INTO BanUsers(Username, Password) SELECT Username, Password FROM Users WHERE Username = " + cl.us;
+                        string sqlDeleteBan = "DELETE FROM Users WHERE Username = " + cl.us;
+                        SQLiteCommand commandI = new SQLiteCommand(sqlInsertBan, m_dbConnection);
+                        commandI.ExecuteNonQuery();
+                        SQLiteCommand commandD = new SQLiteCommand(sqlDeleteBan, m_dbConnection);
+                        commandD.ExecuteNonQuery();
+
+                        byte[] data = new byte[64];
+                        string response = "sub";
+                        data = Encoding.Unicode.GetBytes(response);
+                        cl.stream.Write(data, 0, data.Length);
                         clients.Remove(cl);
                         ConnectedUsers.Items.RemoveAt(ConnectedUsers.SelectedIndex);
                         ConnectedUsers.Items.Refresh();
@@ -94,8 +110,9 @@ namespace server
                         break;
                     } 
                 }
-                
-                
+
+                m_dbConnection.Close();
+
             }
         }
 
@@ -130,9 +147,42 @@ namespace server
 
             client.stream = client.client.GetStream();
 
-            
+            int number = 0;
 
             byte[] data = new byte[64];
+
+            string userM;
+            string messageM;
+
+            if (number > 10)
+            {
+                for (int i = number; i > number - 10; i--)
+                {
+                    string sqlM = "SELECT Username, Message from GeneralMes WHERE Number = " + i;
+                    SQLiteCommand commandM = new SQLiteCommand(sqlM, m_dbConnection);
+                    SQLiteDataReader readerM = commandM.ExecuteReader();
+                    readerM.Read();
+                    userM = readerM["Username"].ToString();
+                    messageM = readerM["Message"].ToString();
+                    data = Encoding.Unicode.GetBytes("scm" + userM + "§" + messageM);
+                    client.stream.Write(data, 0, data.Length);
+                }
+            }
+            else
+            {
+                for (int i = number; i > 0; i--)
+                {
+                    string sqlM = "SELECT Username, Message from GeneralMes WHERE Number = " + i;
+                    SQLiteCommand commandM = new SQLiteCommand(sqlM, m_dbConnection);
+                    SQLiteDataReader readerM = commandM.ExecuteReader();
+                    readerM.Read();
+                    userM = readerM["Username"].ToString();
+                    messageM = readerM["Message"].ToString();
+                    data = Encoding.Unicode.GetBytes("scm" + userM + "§" + messageM);
+                    client.stream.Write(data, 0, data.Length);
+                }
+            }
+
             try
             {
                 while (true)
@@ -208,6 +258,7 @@ namespace server
                             break;
 
                         case "cm":
+                            number++;
                             string sqlCM = "INSERT INTO GeneralMes(Username, Message) VALUES('" + client.us + "', '" + message + "')";
                             SQLiteCommand command3 = new SQLiteCommand(sqlCM, m_dbConnection);
                             command3.ExecuteNonQuery();

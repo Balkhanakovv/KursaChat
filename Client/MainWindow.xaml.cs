@@ -92,7 +92,11 @@ namespace Client
                             Dispatcher.BeginInvoke(new Action(() => SignInGrid.Visibility = Visibility.Hidden));
                             Dispatcher.BeginInvoke(new Action(() => MainSpace.Visibility = Visibility.Visible));
                             break;
-                        case "sub": Dispatcher.BeginInvoke(new Action(() => responseLog.Content = "You have been baned")); break;
+                        case "sub":
+                            Dispatcher.BeginInvoke(new Action(() => SignInGrid.Visibility = Visibility.Visible));
+                            Dispatcher.BeginInvoke(new Action(() => MainSpace.Visibility = Visibility.Hidden));
+                            Dispatcher.BeginInvoke(new Action(() => responseLog.Content = "You have been baned"));
+                            break;
                         case "scm":
                             int pos = message.IndexOf('§');
                             string us = message.Substring(0, pos);
