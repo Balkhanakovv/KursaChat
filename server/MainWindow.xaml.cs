@@ -281,14 +281,14 @@ namespace server
             }
             finally
             {
-                if (client.client != null)
-                {
-                    client.client.Close();
-                }
-                if (client.stream != null)
-                {
-                    client.stream.Close();
-                }
+                //if (client.client != null)
+                //{
+                //    client.client.Close();
+                //}
+                //if (client.stream != null)
+                //{
+                //    client.stream.Close();
+                //}
             }
             m_dbConnection.Close();
         }
