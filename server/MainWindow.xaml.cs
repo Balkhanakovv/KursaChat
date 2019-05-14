@@ -74,8 +74,8 @@ namespace server
         {
             if (ConnectedUsers.SelectedIndex > -1)
             {
-                //string db_name = "C:\\Users\\Admin\\Documents\\РИ-89\\KursaChat\\KursaChat.db";
-                string db_name = "C:\\Users\\Chudo\\source\\repos\\KursaChat\\KursaChat.db";
+                string db_name = "C:\\Users\\Admin\\Documents\\РИ-89\\KursaChat\\KursaChat.db";
+                //string db_name = "C:\\Users\\Chudo\\source\\repos\\KursaChat\\KursaChat.db";
                 SQLiteConnection m_dbConnection;
                 m_dbConnection = new SQLiteConnection("Data Source=" + db_name + ";Version=3;");
                 m_dbConnection.Open();
@@ -118,6 +118,7 @@ namespace server
 
         public void listen()
         {
+
             try
             {
                 while (true)
@@ -153,6 +154,12 @@ namespace server
 
             string userM;
             string messageM;
+
+            string db_name = "C:\\Users\\Admin\\Documents\\РИ-89\\KursaChat\\KursaChat.db";
+            //string db_name = "C:\\Users\\Chudo\\source\\repos\\KursaChat\\KursaChat.db";
+            SQLiteConnection m_dbConnection;
+            m_dbConnection = new SQLiteConnection("Data Source=" + db_name + ";Version=3;");
+            m_dbConnection.Open();
 
             if (number > 10)
             {
@@ -201,12 +208,6 @@ namespace server
                     message = message.Substring(2);
 
                     Dispatcher.BeginInvoke(new Action(() => ServerLog.Items.Add(clientCode + "\t" + message)));
-
-                    string db_name = "C:\\Users\\Admin\\Documents\\РИ-89\\KursaChat\\KursaChat.db";
-                    //string db_name = "C:\\Users\\Chudo\\source\\repos\\KursaChat\\KursaChat.db";
-                    SQLiteConnection m_dbConnection;
-                    m_dbConnection = new SQLiteConnection("Data Source=" + db_name + ";Version=3;");
-                    m_dbConnection.Open();
 
                     string response = "";
 
@@ -272,12 +273,11 @@ namespace server
                             break;
                     }
 
-                    m_dbConnection.Close();
                 }
             }
-            catch
+            catch(Exception ex)
             {
-
+                MessageBox.Show(ex.Message);
             }
             finally
             {
@@ -290,6 +290,7 @@ namespace server
                     client.stream.Close();
                 }
             }
+            m_dbConnection.Close();
         }
     }
 }
