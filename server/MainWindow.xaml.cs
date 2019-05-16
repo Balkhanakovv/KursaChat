@@ -7,6 +7,7 @@ using System.Threading;
 using System.Text;
 using System.Data.SQLite;
 using System.Collections.Generic;
+using System.IO;
 
 namespace server
 {
@@ -15,9 +16,11 @@ namespace server
     /// </summary>
     public partial class MainWindow : Window
     {
+        int number;
         const int port = 666;
         static TcpListener listener;
         string currentTime = DateTime.Now.ToLongTimeString();
+        string path = "C:\\Users\\Admin\\Documents\\РИ-89\\KursaChat\\logList.txt";
 
         struct SClient
         {
@@ -44,7 +47,7 @@ namespace server
                 ServerLog.Items.Add(currentTime + ":\tServer has been started");
 
                 Thread clientThread = new Thread(() => listen());
-               // Dispatcher.BeginInvoke(new Action(() => ServerLog.Items.Add(currentTime + ":\tNew connection")));
+                // Dispatcher.BeginInvoke(new Action(() => ServerLog.Items.Add(currentTime + ":\tNew connection")));
                 clientThread.Start();
 
             }
@@ -108,7 +111,7 @@ namespace server
                             cl.stream.Close();
                         }
                         break;
-                    } 
+                    }
                 }
 
                 m_dbConnection.Close();
@@ -138,7 +141,7 @@ namespace server
 
         public void Process(TcpClient tcpClient)
         {
-            
+
             //TcpClient client = tcpClient;
             //NetworkStream stream = null;
 
@@ -148,46 +151,23 @@ namespace server
 
             client.stream = client.client.GetStream();
 
-            int number = 0;
-
             byte[] data = new byte[64];
-
-            string userM;
-            string messageM;
 
             string db_name = "C:\\Users\\Admin\\Documents\\РИ-89\\KursaChat\\KursaChat.db";
             //string db_name = "C:\\Users\\Chudo\\source\\repos\\KursaChat\\KursaChat.db";
             SQLiteConnection m_dbConnection;
             m_dbConnection = new SQLiteConnection("Data Source=" + db_name + ";Version=3;");
             m_dbConnection.Open();
-
-            if (number > 10)
+            //string lineLog;
+            number = 0;
+            foreach (string lineLog in File.ReadLines(path))
             {
-                for (int i = number; i > number - 10; i--)
-                {
-                    string sqlM = "SELECT Username, Message from GeneralMes WHERE Number = " + i;
-                    SQLiteCommand commandM = new SQLiteCommand(sqlM, m_dbConnection);
-                    SQLiteDataReader readerM = commandM.ExecuteReader();
-                    readerM.Read();
-                    userM = readerM["Username"].ToString();
-                    messageM = readerM["Message"].ToString();
-                    data = Encoding.Unicode.GetBytes("scm" + userM + "§" + messageM);
-                    client.stream.Write(data, 0, data.Length);
-                }
+                number++;
             }
-            else
+
+            for (int i = number; i>number-10; i--)
             {
-                for (int i = number; i > 0; i--)
-                {
-                    string sqlM = "SELECT Username, Message from GeneralMes WHERE Number = " + i;
-                    SQLiteCommand commandM = new SQLiteCommand(sqlM, m_dbConnection);
-                    SQLiteDataReader readerM = commandM.ExecuteReader();
-                    readerM.Read();
-                    userM = readerM["Username"].ToString();
-                    messageM = readerM["Message"].ToString();
-                    data = Encoding.Unicode.GetBytes("scm" + userM + "§" + messageM);
-                    client.stream.Write(data, 0, data.Length);
-                }
+
             }
 
             try
@@ -221,7 +201,7 @@ namespace server
                             SQLiteCommand command = new SQLiteCommand(sqlCL, m_dbConnection);
                             object reader = command.ExecuteScalar();
                             int exist = int.Parse(reader.ToString());
-                            client.password = message.Substring(indexOfChar+1);
+                            client.password = message.Substring(indexOfChar + 1);
                             Dispatcher.BeginInvoke(new Action(() => ConnectedUsers.Items.Add(client.us)));
 
                             if (exist == 0)
@@ -232,7 +212,7 @@ namespace server
                                 response = "srp";
                                 data = Encoding.Unicode.GetBytes(response);
                                 client.stream.Write(data, 0, data.Length);
-                                
+
                                 clients.Add(client);
                             }
                             else
@@ -259,10 +239,9 @@ namespace server
                             break;
 
                         case "cm":
-                            number++;
-                            string sqlCM = "INSERT INTO GeneralMes(Username, Message) VALUES('" + client.us + "', '" + message + "')";
-                            SQLiteCommand command3 = new SQLiteCommand(sqlCM, m_dbConnection);
-                            command3.ExecuteNonQuery();
+                            string appendText = DateTime.Now.ToString() + '§' + client.us + '§' + message + Environment.NewLine;
+                            File.AppendAllText(path, appendText);
+                            
                             data = Encoding.Unicode.GetBytes("scm" + client.us + "§" + message);
                             foreach (SClient cl in clients)
                             {
@@ -275,7 +254,7 @@ namespace server
 
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
             }
