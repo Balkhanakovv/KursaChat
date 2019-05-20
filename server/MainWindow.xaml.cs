@@ -21,6 +21,7 @@ namespace server
         static TcpListener listener;
         string currentTime = DateTime.Now.ToLongTimeString();
         string path = "C:\\Users\\Admin\\Documents\\РИ-89\\KursaChat\\logList.txt";
+        //string path = "C:\\Users\\Chudo\\source\\repos\\KursaChat\\logList.txt";
 
         struct SClient
         {
@@ -158,16 +159,24 @@ namespace server
             SQLiteConnection m_dbConnection;
             m_dbConnection = new SQLiteConnection("Data Source=" + db_name + ";Version=3;");
             m_dbConnection.Open();
-            //string lineLog;
             number = 0;
+            int ni = number;
             foreach (string lineLog in File.ReadLines(path))
             {
                 number++;
             }
 
-            for (int i = number; i>number-10; i--)
+            foreach (string lineLog in File.ReadLines(path))
             {
-
+                if(ni<=10)
+                {
+                    data = Encoding.Unicode.GetBytes("scm" + client.us + "§" + lineLog);
+                    client.stream.Write(data, 0, data.Length);
+                }
+                else
+                {
+                    ni--;
+                }
             }
 
             try
