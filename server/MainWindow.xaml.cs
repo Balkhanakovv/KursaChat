@@ -170,7 +170,9 @@ namespace server
             {
                 if(ni<=10)
                 {
-                    data = Encoding.Unicode.GetBytes("scm" + client.us + "§" + lineLog);
+                    Dispatcher.BeginInvoke(new Action(() => ServerLog.Items.Add(Encoding.Unicode.GetBytes("sсm" + lineLog).Length.ToString())));
+
+                    data = Encoding.Unicode.GetBytes("shm" + lineLog);
                     client.stream.Write(data, 0, data.Length);
                 }
                 else
@@ -248,7 +250,7 @@ namespace server
                             break;
 
                         case "cm":
-                            string appendText = DateTime.Now.ToString() + '§' + client.us + '§' + message + Environment.NewLine;
+                            string appendText = DateTime.Now.ToString() + '\t' + client.us + '§' + message + Environment.NewLine;
                             File.AppendAllText(path, appendText);
                             
                             data = Encoding.Unicode.GetBytes("scm" + client.us + "§" + message);

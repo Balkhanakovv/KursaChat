@@ -103,6 +103,9 @@ namespace Client
                             message = message.Substring(pos+1);
                             Dispatcher.BeginInvoke(new Action(() => history.Items.Add(DateTime.Now + "\t" + us + ": " + message)));
                             break;
+                        case "shm":
+                            pos = message.IndexOf('¢');
+                            break;
                     }
                 }
             }
