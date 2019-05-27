@@ -104,7 +104,26 @@ namespace Client
                             Dispatcher.BeginInvoke(new Action(() => history.Items.Add(DateTime.Now + "\t" + us + ": " + message)));
                             break;
                         case "shm":
-                            pos = message.IndexOf('¢');
+                            pos = message.IndexOf("shm");
+                            while (pos != -1)
+                            {
+                                string HMes = message.Substring(0, pos);
+                                Dispatcher.BeginInvoke(new Action(() => history.Items.Add(HMes)));
+                                message = message.Substring(pos + 3);
+                                pos = message.IndexOf("shm");
+                            }
+                            Dispatcher.BeginInvoke(new Action(() => history.Items.Add(message)));
+                            break;
+                        case "sum":
+                            pos = message.IndexOf("sum");
+                            while (pos != -1)
+                            {
+                                string UMes = message.Substring(0, pos);
+                                Dispatcher.BeginInvoke(new Action(() => Users.Items.Add(UMes)));
+                                message = message.Substring(pos + 3);
+                                pos = message.IndexOf("shm");
+                            }
+                            Dispatcher.BeginInvoke(new Action(() => Users.Items.Add(message)));
                             break;
                     }
                 }

@@ -20,8 +20,8 @@ namespace server
         const int port = 666;
         static TcpListener listener;
         string currentTime = DateTime.Now.ToLongTimeString();
-        string path = "C:\\Users\\Admin\\Documents\\РИ-89\\KursaChat\\logList.txt";
-        //string path = "C:\\Users\\Chudo\\source\\repos\\KursaChat\\logList.txt";
+        //string path = "C:\\Users\\Admin\\Documents\\РИ-89\\KursaChat\\logList.txt";
+        string path = "C:\\Users\\Chudo\\source\\repos\\KursaChat\\logList.txt";
 
         struct SClient
         {
@@ -78,8 +78,8 @@ namespace server
         {
             if (ConnectedUsers.SelectedIndex > -1)
             {
-                string db_name = "C:\\Users\\Admin\\Documents\\РИ-89\\KursaChat\\KursaChat.db";
-                //string db_name = "C:\\Users\\Chudo\\source\\repos\\KursaChat\\KursaChat.db";
+                //string db_name = "C:\\Users\\Admin\\Documents\\РИ-89\\KursaChat\\KursaChat.db";
+                string db_name = "C:\\Users\\Chudo\\source\\repos\\KursaChat\\KursaChat.db";
                 SQLiteConnection m_dbConnection;
                 m_dbConnection = new SQLiteConnection("Data Source=" + db_name + ";Version=3;");
                 m_dbConnection.Open();
@@ -122,7 +122,6 @@ namespace server
 
         public void listen()
         {
-
             try
             {
                 while (true)
@@ -154,8 +153,8 @@ namespace server
 
             byte[] data = new byte[64];
 
-            string db_name = "C:\\Users\\Admin\\Documents\\РИ-89\\KursaChat\\KursaChat.db";
-            //string db_name = "C:\\Users\\Chudo\\source\\repos\\KursaChat\\KursaChat.db";
+            //string db_name = "C:\\Users\\Admin\\Documents\\РИ-89\\KursaChat\\KursaChat.db";
+            string db_name = "C:\\Users\\Chudo\\source\\repos\\KursaChat\\KursaChat.db";
             SQLiteConnection m_dbConnection;
             m_dbConnection = new SQLiteConnection("Data Source=" + db_name + ";Version=3;");
             m_dbConnection.Open();
@@ -225,6 +224,11 @@ namespace server
                                 client.stream.Write(data, 0, data.Length);
 
                                 clients.Add(client);
+                                foreach (SClient cl in clients)
+                                {
+                                    data = Encoding.Unicode.GetBytes("sum" + cl.us);
+                                    client.stream.Write(data, 0, data.Length);
+                                }
                             }
                             else
                             {
@@ -244,13 +248,19 @@ namespace server
                                     data = Encoding.Unicode.GetBytes(response);
                                     client.stream.Write(data, 0, data.Length);
                                     clients.Add(client);
+
+                                    foreach (SClient cl in clients)
+                                    {
+                                        data = Encoding.Unicode.GetBytes("sum" + cl.us);
+                                        client.stream.Write(data, 0, data.Length);
+                                    }
                                 }
                             }
 
                             break;
 
                         case "cm":
-                            string appendText = DateTime.Now.ToString() + '\t' + client.us + '§' + message + Environment.NewLine;
+                            string appendText = DateTime.Now.ToString() + '\t' + client.us + ": " + message + Environment.NewLine;
                             File.AppendAllText(path, appendText);
                             
                             data = Encoding.Unicode.GetBytes("scm" + client.us + "§" + message);
