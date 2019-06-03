@@ -219,6 +219,11 @@ namespace server
                             }
                             client.stream.Write(data, 0, data.Length);
                             break;
+
+                        case "ds":
+                            Dispatcher.BeginInvoke(new Action(() => ConnectedUsers.Items.Remove(client.us)));
+                            Dispatcher.BeginInvoke(new Action(() => ServerLog.Items.Add(client.us + ":Connection lost")));
+                            break;
                     }
 
                     m_dbConnection.Close();
