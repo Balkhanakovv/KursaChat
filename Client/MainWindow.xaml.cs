@@ -157,6 +157,9 @@ namespace Client
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            string message = "dsc0nn3c710n_c10s3";
+            byte[] data = Encoding.Unicode.GetBytes(message);
+            stream.Write(data, 0, data.Length);
             stream.Close();
             client.Close();
         }
