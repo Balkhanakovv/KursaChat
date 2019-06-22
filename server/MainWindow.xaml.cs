@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Net;
@@ -22,8 +21,8 @@ namespace server
         static TcpListener listener;
         string currentTime = DateTime.Now.ToLongTimeString();
         //string path = "C:\\Users\\Admin\\Documents\\РИ-89\\KursaChat\\logList.txt";
-        //string path = "C:\\Users\\Chudo\\source\\repos\\KursaChat\\logList.txt";
-        string path = "C:\\Users\\Admin\\Desktop\\KursaChat\\KursaChat.db";
+        string path = "C:\\Users\\FOX\\source\\repos\\KursaChat\\logList.txt";
+        //string path = "C:\\Users\\Admin\\Desktop\\KursaChat\\KursaChat.db";
 
         struct SClient
         {
@@ -81,8 +80,8 @@ namespace server
             if (ConnectedUsers.SelectedIndex > -1)
             {
                 //string db_name = "C:\\Users\\Admin\\Documents\\РИ-89\\KursaChat\\KursaChat.db";
-                //string db_name = "C:\\Users\\Chudo\\source\\repos\\KursaChat\\KursaChat.db";
-                string db_name = "C:\\Users\\Admin\\Desktop\\KursaChat\\KursaChat.db";
+                string db_name = "C:\\Users\\FOX\\source\\repos\\KursaChat\\KursaChat.db";
+                //string db_name = "C:\\Users\\Admin\\Desktop\\KursaChat\\KursaChat.db";
                 SQLiteConnection m_dbConnection;
                 m_dbConnection = new SQLiteConnection("Data Source=" + db_name + ";Version=3;");
                 m_dbConnection.Open();
@@ -157,17 +156,18 @@ namespace server
             byte[] data = new byte[64];
 
             //string db_name = "C:\\Users\\Admin\\Documents\\РИ-89\\KursaChat\\KursaChat.db";
-            //string db_name = "C:\\Users\\Chudo\\source\\repos\\KursaChat\\KursaChat.db";
-            string db_name = "C:\\Users\\Admin\\Desktop\\KursaChat\\KursaChat.db";
-             SQLiteConnection m_dbConnection;
+            string db_name = "C:\\Users\\FOX\\source\\repos\\KursaChat\\KursaChat.db";
+            //string db_name = "C:\\Users\\Admin\\Desktop\\KursaChat\\KursaChat.db";
+            SQLiteConnection m_dbConnection;
             m_dbConnection = new SQLiteConnection("Data Source=" + db_name + ";Version=3;");
             m_dbConnection.Open();
             number = 0;
-            int ni = number;
             foreach (string lineLog in File.ReadLines(path))
             {
                 number++;
             }
+
+            int ni = number;
 
             foreach (string lineLog in File.ReadLines(path))
             {

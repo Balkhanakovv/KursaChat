@@ -10,20 +10,20 @@
     <Grid>
         <Grid x:Name="SignInGrid" Margin="0,0,400,0" Visibility="Visible">
             <Button x:Name="SignInBt" Content="Sign in" HorizontalAlignment="Left" Margin="150,330,0,0" VerticalAlignment="Top" Width="95" Click="SignIn_Click"/>
-            <TextBox x:Name="LoginTb" HorizontalAlignment="Left" Height="23" Margin="136,137,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
+            <TextBox x:Name="LoginTb" TextChanged="LoginTb_TextChanged" HorizontalAlignment="Left" Height="23" Margin="136,137,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
             <PasswordBox x:Name="PasswdTb" HorizontalAlignment="Left" Height="23" Margin="136,208,0,0" VerticalAlignment="Top" Width="120"/>
             <Label Content="Login" HorizontalAlignment="Left" Margin="136,106,0,0" VerticalAlignment="Top" Width="120"/>
             <Label Content="Password" HorizontalAlignment="Left" Margin="136,177,0,0" VerticalAlignment="Top" Width="120"/>
-            <Label x:Name="responseLog" Content="" HorizontalAlignment="Left" Margin="136,271,0,0" VerticalAlignment="Top" Width="120"/>
+            <Label x:Name="responseLog" Content="Login must be less&#xa;than 10 characters"  HorizontalAlignment="Left" Margin="136,251,0,0" VerticalAlignment="Top" Width="120"/>
         </Grid>
 
         <Grid x:Name="MainSpace" HorizontalAlignment="Left" Height="426" VerticalAlignment="Top" Width="794" Margin="0,0,-400,0" Visibility="Hidden">
-            <ListBox x:Name="Users" HorizontalAlignment="Left" Height="356" Margin="10,50,0,0" VerticalAlignment="Top" Width="181" BorderThickness="1"/>
-            <TextBox x:Name="Message" HorizontalAlignment="Left" Height="30" Margin="200,376,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="500"/>
+            <ListBox x:Name="Users" HorizontalAlignment="Left" Height="321" Margin="10,50,0,0" VerticalAlignment="Top" Width="181" BorderThickness="1"/>
+            <TextBox x:Name="Message" TextChanged="Message_TextChanged" HorizontalAlignment="Left" Height="30" Margin="200,376,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="500"/>
             <Label Content="Users" HorizontalAlignment="Left" Margin="11,19,0,0" VerticalAlignment="Top" Width="180"/>
-            <Button Content="Send" HorizontalAlignment="Left" VerticalAlignment="Top" Width="79" Margin="705,376,0,0" Height="30" Click="SendMess_Click"/>
+            <Button x:Name="Send" Content="Send" HorizontalAlignment="Left" VerticalAlignment="Top" Width="79" Margin="705,376,0,0" Height="30" Click="SendMess_Click"/>
             <ListBox x:Name="history" HorizontalAlignment="Left" Height="361" Margin="200,10,0,0" VerticalAlignment="Top" Width="584"/>
-
+            <Label Content="0/134" HorizontalContentAlignment="Center" x:Name="Cou" Margin="140,376,599,20" />
         </Grid>
 
     </Grid>

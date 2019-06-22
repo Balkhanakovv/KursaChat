@@ -28,11 +28,18 @@ namespace Client
         TcpClient client = null;
         NetworkStream stream;
         const int port = 666;
+        int cou = 25, cout;
 
         public MainWindow()
         {
             InitializeComponent();
+
+            //if (LoginTb.Text.Length <= 10 && LoginTb.Text.Length != 0 && PasswdTb.Password.ToString().Length <= 10 && PasswdTb.Password.ToString().Length != 0)
+            //{
+            //    SignInBt.IsEnabled = true;
+            //}
         }
+
 
 
         private void SignIn_Click(object sender, RoutedEventArgs e)
@@ -101,14 +108,32 @@ namespace Client
                             int pos = message.IndexOf('§');
                             string us = message.Substring(0, pos);
                             message = message.Substring(pos+1);
-                            Dispatcher.BeginInvoke(new Action(() => history.Items.Add(DateTime.Now + "\t" + us + ": " + message)));
+                            if(cou + us.Length + message.Length <= 81)
+                            {
+                                Dispatcher.BeginInvoke(new Action(() => history.Items.Add(DateTime.Now + "\t" + us + ": " + message)));
+                            }
+                            else
+                            {
+                                cout = 81 - cou - us.Length;
+                                message = message.Insert(cout, "\n");
+                                Dispatcher.BeginInvoke(new Action(() => history.Items.Add(DateTime.Now + "\t" + us + ": " + message)));
+                            }
                             break;
                         case "shm":
                             pos = message.IndexOf("shm");
                             while (pos != -1)
                             {
                                 string HMes = message.Substring(0, pos);
-                                Dispatcher.BeginInvoke(new Action(() => history.Items.Add(HMes)));
+                                if (HMes.Length < 78)
+                                {
+                                    Dispatcher.BeginInvoke(new Action(() => history.Items.Add(HMes)));
+                                }
+                                else
+                                {
+                                    cout = 78;
+                                    HMes = HMes.Insert(cout, "\n");
+                                    Dispatcher.BeginInvoke(new Action(() => history.Items.Add(HMes)));
+                                }
                                 message = message.Substring(pos + 3);
                                 pos = message.IndexOf("shm");
                             }
@@ -152,6 +177,29 @@ namespace Client
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
+            }
+        }
+
+        int mesCou;
+
+        private void Message_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            mesCou = Message.Text.Length;
+            Cou.Content = mesCou.ToString() + "/134";
+            if(mesCou > 134)
+            {
+                Send.IsEnabled = false;
+            }
+        }
+
+        int logCou;
+
+        private void LoginTb_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            logCou = LoginTb.Text.Length;
+            if (logCou > 10)
+            {
+                SignInBt.IsEnabled = false;
             }
         }
 
