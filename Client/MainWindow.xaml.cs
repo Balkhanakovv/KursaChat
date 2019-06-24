@@ -42,7 +42,7 @@ namespace Client
 
 
 
-        private void SignIn_Click(object sender, RoutedEventArgs e)
+        public void SignIn_Click(object sender, RoutedEventArgs e)
         {
             try
             {
@@ -119,6 +119,7 @@ namespace Client
                                 Dispatcher.BeginInvoke(new Action(() => history.Items.Add(DateTime.Now + "\t" + us + ": " + message)));
                             }
                             break;
+
                         case "shm":
                             pos = message.IndexOf("shm");
                             while (pos != -1)
@@ -139,6 +140,7 @@ namespace Client
                             }
                             Dispatcher.BeginInvoke(new Action(() => history.Items.Add(message)));
                             break;
+
                         case "sum":
                             pos = message.IndexOf("sum");
                             while (pos != -1)
@@ -148,6 +150,14 @@ namespace Client
                                 message = message.Substring(pos + 3);
                                 pos = message.IndexOf("shm");
                             }
+                            Dispatcher.BeginInvoke(new Action(() => Users.Items.Add(message)));
+                            break;
+
+                        case "sds":
+                            Dispatcher.BeginInvoke(new Action(() => Users.Items.Remove(message)));
+                            break;
+
+                        case "sms":
                             Dispatcher.BeginInvoke(new Action(() => Users.Items.Add(message)));
                             break;
                     }
@@ -197,17 +207,19 @@ namespace Client
         private void LoginTb_TextChanged(object sender, TextChangedEventArgs e)
         {
             logCou = LoginTb.Text.Length;
-            if (logCou > 10)
+            if (logCou > 10 && logCou == 0)
             {
                 SignInBt.IsEnabled = false;
             }
         }
+        
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             string message = "dsc0nn3c710n_c10s3";
             byte[] data = Encoding.Unicode.GetBytes(message);
             stream.Write(data, 0, data.Length);
+            Thread.Sleep(100);
             stream.Close();
             client.Close();
         }

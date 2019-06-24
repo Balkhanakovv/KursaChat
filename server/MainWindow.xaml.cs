@@ -20,8 +20,8 @@ namespace server
         const int port = 666;
         static TcpListener listener;
         string currentTime = DateTime.Now.ToLongTimeString();
-        //string path = "C:\\Users\\Admin\\Documents\\РИ-89\\KursaChat\\logList.txt";
-        string path = "C:\\Users\\FOX\\source\\repos\\KursaChat\\logList.txt";
+        string path = "C:\\Users\\Admin\\source\\repos\\KursaChat\\logList.txt";
+        //string path = "C:\\Users\\FOX\\source\\repos\\KursaChat\\logList.txt";
         //string path = "C:\\Users\\Admin\\Desktop\\KursaChat\\KursaChat.db";
 
         struct SClient
@@ -79,8 +79,8 @@ namespace server
         {
             if (ConnectedUsers.SelectedIndex > -1)
             {
-                //string db_name = "C:\\Users\\Admin\\Documents\\РИ-89\\KursaChat\\KursaChat.db";
-                string db_name = "C:\\Users\\FOX\\source\\repos\\KursaChat\\KursaChat.db";
+                string db_name = "C:\\Users\\Admin\\source\\repos\\KursaChat\\KursaChat.db";
+                //string db_name = "C:\\Users\\FOX\\source\\repos\\KursaChat\\KursaChat.db";
                 //string db_name = "C:\\Users\\Admin\\Desktop\\KursaChat\\KursaChat.db";
                 SQLiteConnection m_dbConnection;
                 m_dbConnection = new SQLiteConnection("Data Source=" + db_name + ";Version=3;");
@@ -89,6 +89,7 @@ namespace server
                 string banned = ConnectedUsers.SelectedItem.ToString();
                 foreach (SClient cl in clients)
                 {
+                    byte[] data = new byte[64];
                     if (cl.us == banned)
                     {
                         string sqlInsertBan = "INSERT INTO BanUsers(Username, Password) SELECT Username, Password FROM Users WHERE Username = " + cl.us;
@@ -98,7 +99,6 @@ namespace server
                         SQLiteCommand commandD = new SQLiteCommand(sqlDeleteBan, m_dbConnection);
                         commandD.ExecuteNonQuery();
 
-                        byte[] data = new byte[64];
                         string response = "sub";
                         data = Encoding.Unicode.GetBytes(response);
                         cl.stream.Write(data, 0, data.Length);
@@ -115,10 +115,16 @@ namespace server
                         }
                         break;
                     }
+
+                    data = Encoding.Unicode.GetBytes("sds" + banned);
+                    if (cl.us != banned)
+                    {
+                        cl.stream.Write(data, 0, data.Length);
+                    }
                 }
 
                 m_dbConnection.Close();
-
+                
             }
         }
 
@@ -155,8 +161,8 @@ namespace server
 
             byte[] data = new byte[64];
 
-            //string db_name = "C:\\Users\\Admin\\Documents\\РИ-89\\KursaChat\\KursaChat.db";
-            string db_name = "C:\\Users\\FOX\\source\\repos\\KursaChat\\KursaChat.db";
+            string db_name = "C:\\Users\\Admin\\source\\repos\\KursaChat\\KursaChat.db";
+            //string db_name = "C:\\Users\\FOX\\source\\repos\\KursaChat\\KursaChat.db";
             //string db_name = "C:\\Users\\Admin\\Desktop\\KursaChat\\KursaChat.db";
             SQLiteConnection m_dbConnection;
             m_dbConnection = new SQLiteConnection("Data Source=" + db_name + ";Version=3;");
@@ -173,7 +179,7 @@ namespace server
             {
                 if(ni<=10)
                 {
-                    Dispatcher.BeginInvoke(new Action(() => ServerLog.Items.Add(Encoding.Unicode.GetBytes("sсm" + lineLog).Length.ToString())));
+                    //Dispatcher.BeginInvoke(new Action(() => ServerLog.Items.Add(Encoding.Unicode.GetBytes("sсm" + lineLog).Length.ToString())));
 
                     data = Encoding.Unicode.GetBytes("shm" + lineLog);
                     client.stream.Write(data, 0, data.Length);
@@ -209,14 +215,46 @@ namespace server
                     switch (clientCode)
                     {
                         case "up":
+                            
                             int indexOfChar = message.IndexOf("¬");
                             client.us = message.Substring(0, indexOfChar);
+
+                            int bu = 0;
+
+                            foreach (SClient cl in clients)
+                            {
+                                if (cl.us == client.us)
+                                {
+                                    Dispatcher.BeginInvoke(new Action(() => ServerLog.Items.Add("bu")));
+                                    bu = 1;
+                                    break;
+                                }
+                            }
+
+                            if (bu == 1)
+                            {
+                                break;
+                            }
+
+                            string sqlBan = "SELECT COUNT(*) FROM BanUsers WHERE Username = '" + client.us + "'";
+                            SQLiteCommand commandB = new SQLiteCommand(sqlBan, m_dbConnection);
+                            object readerB = commandB.ExecuteScalar();
+                            int existB = int.Parse(readerB.ToString());
+                            if(existB == 1)
+                            {
+                                string responseB = "sub";
+                                data = Encoding.Unicode.GetBytes(responseB);
+                                client.stream.Write(data, 0, data.Length);
+                                break;
+                            }
+
+
                             string sqlCL = "SELECT COUNT(*) FROM Users WHERE Username = '" + client.us + "'";
                             SQLiteCommand command = new SQLiteCommand(sqlCL, m_dbConnection);
                             object reader = command.ExecuteScalar();
                             int exist = int.Parse(reader.ToString());
                             client.password = message.Substring(indexOfChar + 1);
-                            Dispatcher.BeginInvoke(new Action(() => ConnectedUsers.Items.Add(client.us)));
+                            
 
                             if (exist == 0)
                             {
@@ -226,12 +264,22 @@ namespace server
                                 response = "srp";
                                 data = Encoding.Unicode.GetBytes(response);
                                 client.stream.Write(data, 0, data.Length);
-
                                 clients.Add(client);
                                 foreach (SClient cl in clients)
                                 {
                                     data = Encoding.Unicode.GetBytes("sum" + cl.us);
                                     client.stream.Write(data, 0, data.Length);
+                                }
+                                Dispatcher.BeginInvoke(new Action(() => ConnectedUsers.Items.Add(client.us)));
+                                Thread.Sleep(100);
+
+                                foreach (SClient cl in clients)
+                                {
+                                    data = Encoding.Unicode.GetBytes("sms" + client.us);
+                                    if (cl.client != client.client)
+                                    {
+                                        cl.stream.Write(data, 0, data.Length);
+                                    }
                                 }
                             }
                             else
@@ -258,6 +306,17 @@ namespace server
                                         data = Encoding.Unicode.GetBytes("sum" + cl.us);
                                         client.stream.Write(data, 0, data.Length);
                                     }
+                                    Dispatcher.BeginInvoke(new Action(() => ConnectedUsers.Items.Add(client.us)));
+                                    Thread.Sleep(100);
+
+                                    foreach (SClient cl in clients)
+                                    {
+                                        data = Encoding.Unicode.GetBytes("sms" + client.us);
+                                        if (cl.client != client.client)
+                                        {
+                                            cl.stream.Write(data, 0, data.Length);
+                                        }
+                                    }
                                 }
                             }
 
@@ -276,9 +335,21 @@ namespace server
                             client.stream.Write(data, 0, data.Length);
                             break;
 
+                        
                         case "ds":
+                            foreach (SClient cl in clients)
+                            {
+                                data = Encoding.Unicode.GetBytes("sds" + client.us);
+                                if (cl.client != client.client)
+                                {
+                                    cl.stream.Write(data, 0, data.Length);
+                                }
+                            }
+
                             Dispatcher.BeginInvoke(new Action(() => ConnectedUsers.Items.Remove(client.us)));
                             Dispatcher.BeginInvoke(new Action(() => ServerLog.Items.Add(client.us + ":Connection lost")));
+                            clients.Remove(client);
+                            Dispatcher.BeginInvoke(new Action(() => ConnectedUsers.Items.Refresh()));
                             break;
                     }
 
@@ -300,6 +371,11 @@ namespace server
                 //}
             }
             m_dbConnection.Close();
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            listener.Stop();
         }
     }
 }
