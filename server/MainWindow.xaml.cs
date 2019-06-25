@@ -20,7 +20,7 @@ namespace server
         const int port = 11337;
         static TcpListener listener;
         string currentTime = DateTime.Now.ToLongTimeString();
-        string path = "C:\\Users\\Admin\\source\\repos\\KursaChat\\logList.txt";
+        string path = @"logList.txt";
         //string path = "C:\\Users\\FOX\\source\\repos\\KursaChat\\logList.txt";
         //string path = "C:\\Users\\Admin\\Desktop\\KursaChat\\KursaChat.db";
 
@@ -44,7 +44,7 @@ namespace server
         {
             try
             {
-                listener = new TcpListener(IPAddress.Parse("10.23.168.35"), port);
+                listener = new TcpListener(IPAddress.Parse("127.0.0.1"), port);
                 listener.Start();
                 ServerLog.Items.Add(currentTime + ":\tServer has been started");
 
@@ -62,7 +62,7 @@ namespace server
             }
             catch (Exception ex)
             {
-                
+                MessageBox.Show(ex.Message);
             }
         }
 
@@ -76,8 +76,7 @@ namespace server
             }
             listener.Stop();
             ServerLog.Items.Add("Server has been stopped");
-            ConnectedUsers
-                .Items.Clear();
+            ConnectedUsers.Items.Clear();
             
         }
 
@@ -95,7 +94,7 @@ namespace server
         {
             if (ConnectedUsers.SelectedIndex > -1)
             {
-                string db_name = "C:\\Users\\Admin\\source\\repos\\KursaChat\\KursaChat.db";
+                string db_name = @"KursaChat.db";
                 //string db_name = "C:\\Users\\FOX\\source\\repos\\KursaChat\\KursaChat.db";
                 //string db_name = "C:\\Users\\Admin\\Desktop\\KursaChat\\KursaChat.db";
                 SQLiteConnection m_dbConnection;
@@ -159,7 +158,7 @@ namespace server
             }
             catch (Exception ex)
             {
-                
+                MessageBox.Show(ex.Message);
             }
         }
 
@@ -177,7 +176,7 @@ namespace server
 
             byte[] data = new byte[64];
 
-            string db_name = "C:\\Users\\Admin\\source\\repos\\KursaChat\\KursaChat.db";
+            string db_name = @"KursaChat.db";
             //string db_name = "C:\\Users\\FOX\\source\\repos\\KursaChat\\KursaChat.db";
             //string db_name = "C:\\Users\\Admin\\Desktop\\KursaChat\\KursaChat.db";
             SQLiteConnection m_dbConnection;
@@ -375,7 +374,7 @@ namespace server
             }
             catch (Exception ex)
             {
-                
+                MessageBox.Show(ex.Message);
             }
             finally
             {

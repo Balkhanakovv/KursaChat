@@ -24,7 +24,7 @@ namespace Client
    
     public partial class MainWindow : Window
     {
-        const string address = "10.23.168.35";
+        const string address = "127.0.0.1";
         TcpClient client = null;
         NetworkStream stream;
         const int port = 11337;
