@@ -24,10 +24,10 @@ namespace Client
    
     public partial class MainWindow : Window
     {
-        const string address = "127.0.0.1";
+        const string address = "10.23.168.35";
         TcpClient client = null;
         NetworkStream stream;
-        const int port = 666;
+        const int port = 11337;
         int cou = 25, cout;
 
         public MainWindow()
@@ -54,7 +54,7 @@ namespace Client
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                
             }
 
             try
@@ -67,7 +67,7 @@ namespace Client
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                
             }
             
         }
@@ -111,12 +111,16 @@ namespace Client
                             if(cou + us.Length + message.Length <= 81)
                             {
                                 Dispatcher.BeginInvoke(new Action(() => history.Items.Add(DateTime.Now + "\t" + us + ": " + message)));
+                                Dispatcher.BeginInvoke(new Action(() => history.SelectedIndex = history.Items.Count - 1));
+                                Dispatcher.BeginInvoke(new Action(() => history.ScrollIntoView(history.SelectedItem)));
                             }
                             else
                             {
                                 cout = 81 - cou - us.Length;
                                 message = message.Insert(cout, "\n");
                                 Dispatcher.BeginInvoke(new Action(() => history.Items.Add(DateTime.Now + "\t" + us + ": " + message)));
+                                Dispatcher.BeginInvoke(new Action(() => history.SelectedIndex = history.Items.Count - 1));
+                                Dispatcher.BeginInvoke(new Action(() => history.ScrollIntoView(history.SelectedItem)));
                             }
                             break;
 
@@ -160,6 +164,13 @@ namespace Client
                         case "sms":
                             Dispatcher.BeginInvoke(new Action(() => Users.Items.Add(message)));
                             break;
+
+                        case "sto":
+                            Dispatcher.BeginInvoke(new Action(() => SignInGrid.Visibility = Visibility.Visible));
+                            Dispatcher.BeginInvoke(new Action(() => MainSpace.Visibility = Visibility.Hidden));
+                            Dispatcher.BeginInvoke(new Action(() => responseLog.Content = "Server has been stopped\nTry later :)"));
+                            stream.Close();
+                            break;
                     }
                 }
             }
@@ -188,6 +199,8 @@ namespace Client
             {
                 MessageBox.Show(ex.Message);
             }
+
+            Message.Clear();
         }
 
         int mesCou;
@@ -207,12 +220,37 @@ namespace Client
         private void LoginTb_TextChanged(object sender, TextChangedEventArgs e)
         {
             logCou = LoginTb.Text.Length;
-            if (logCou > 10 && logCou == 0)
+            if (logCou <= 10 && logCou != 0)
+            {
+                SignInBt.IsEnabled = true;
+            }
+            else
             {
                 SignInBt.IsEnabled = false;
             }
         }
-        
+
+        private void Send_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                SendMess_Click(sender, new RoutedEventArgs());
+            }
+        }
+
+        private void logOut_Click(object sender, RoutedEventArgs e)
+        {
+            Dispatcher.BeginInvoke(new Action(() => SignInGrid.Visibility = Visibility.Visible));
+            Dispatcher.BeginInvoke(new Action(() => MainSpace.Visibility = Visibility.Hidden));
+            string message = "dsc0nn3c710n_c10s3";
+            byte[] data = Encoding.Unicode.GetBytes(message);
+            stream.Write(data, 0, data.Length);
+            Thread.Sleep(100);
+            stream.Close();
+            client.Close();
+            Dispatcher.BeginInvoke(new Action(() => Users.Items.Clear()));
+            Dispatcher.BeginInvoke(new Action(() => history.Items.Clear()));
+        }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {

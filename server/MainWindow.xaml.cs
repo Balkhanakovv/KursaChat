@@ -17,7 +17,7 @@ namespace server
     public partial class MainWindow : Window
     {
         int number;
-        const int port = 666;
+        const int port = 11337;
         static TcpListener listener;
         string currentTime = DateTime.Now.ToLongTimeString();
         string path = "C:\\Users\\Admin\\source\\repos\\KursaChat\\logList.txt";
@@ -44,7 +44,7 @@ namespace server
         {
             try
             {
-                listener = new TcpListener(IPAddress.Parse("127.0.0.1"), port);
+                listener = new TcpListener(IPAddress.Parse("10.23.168.35"), port);
                 listener.Start();
                 ServerLog.Items.Add(currentTime + ":\tServer has been started");
 
@@ -52,17 +52,33 @@ namespace server
                 // Dispatcher.BeginInvoke(new Action(() => ServerLog.Items.Add(currentTime + ":\tNew connection")));
                 clientThread.Start();
 
+                foreach (SClient cl in clients)
+                {
+                    byte[] data = new byte[64];
+                    data = Encoding.Unicode.GetBytes("sta");
+                    cl.stream.Write(data, 0, data.Length);
+                }
+
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                
             }
         }
 
         private void stopServerBt_Click(object sender, RoutedEventArgs e)
         {
+            foreach (SClient cl in clients)
+            {
+                byte[] data = new byte[64];
+                data = Encoding.Unicode.GetBytes("sto");
+                cl.stream.Write(data, 0, data.Length);
+            }
             listener.Stop();
             ServerLog.Items.Add("Server has been stopped");
+            ConnectedUsers
+                .Items.Clear();
+            
         }
 
         private void ConnectedUsers_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -92,8 +108,8 @@ namespace server
                     byte[] data = new byte[64];
                     if (cl.us == banned)
                     {
-                        string sqlInsertBan = "INSERT INTO BanUsers(Username, Password) SELECT Username, Password FROM Users WHERE Username = " + cl.us;
-                        string sqlDeleteBan = "DELETE FROM Users WHERE Username = " + cl.us;
+                        string sqlInsertBan = "INSERT INTO BanUsers(Username, Password) SELECT Username, Password FROM Users WHERE Username = '" + cl.us + "'";
+                        string sqlDeleteBan = "DELETE FROM Users WHERE Username = '" + cl.us + "'";
                         SQLiteCommand commandI = new SQLiteCommand(sqlInsertBan, m_dbConnection);
                         commandI.ExecuteNonQuery();
                         SQLiteCommand commandD = new SQLiteCommand(sqlDeleteBan, m_dbConnection);
@@ -143,7 +159,7 @@ namespace server
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                
             }
         }
 
@@ -207,7 +223,7 @@ namespace server
                     string clientCode = message.Substring(0, 2);
                     message = message.Substring(2);
 
-                    Dispatcher.BeginInvoke(new Action(() => ServerLog.Items.Add(clientCode + "\t" + message)));
+                    //Dispatcher.BeginInvoke(new Action(() => ServerLog.Items.Add(clientCode + "\t" + message)));
 
                     string response = "";
 
@@ -225,7 +241,7 @@ namespace server
                             {
                                 if (cl.us == client.us)
                                 {
-                                    Dispatcher.BeginInvoke(new Action(() => ServerLog.Items.Add("bu")));
+                                    //Dispatcher.BeginInvoke(new Action(() => ServerLog.Items.Add("bu")));
                                     bu = 1;
                                     break;
                                 }
@@ -296,10 +312,12 @@ namespace server
                                 }
                                 else
                                 {
+                                    Thread.Sleep(100);
                                     response = "srp";
                                     data = Encoding.Unicode.GetBytes(response);
                                     client.stream.Write(data, 0, data.Length);
                                     clients.Add(client);
+                                    Thread.Sleep(150);
 
                                     foreach (SClient cl in clients)
                                     {
@@ -357,7 +375,7 @@ namespace server
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                
             }
             finally
             {
